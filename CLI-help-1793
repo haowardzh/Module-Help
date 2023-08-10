@@ -1,0 +1,606 @@
+Help on package cli:
+
+NAME
+    cli
+
+DESCRIPTION
+    Copyright (c) 2020-2021 by Cisco Systems, Inc.
+    All rights reserved.
+    
+    Run Cisco IOS CLI commands and receive the output.
+    
+    This module contains utility functions that run Cisco IOS CLI commands and provide
+    the output.
+
+PACKAGE CONTENTS
+    _test (package)
+
+CLASSES
+    builtins.Exception(builtins.BaseException)
+        CLICommandError
+        IOSPCLIConfError
+        IOSPCLIError
+        IOSPSetupInProgress
+        IOSPSystemError
+        IOSPUnexpectedError
+    
+    class CLICommandError(builtins.Exception)
+     |  A base class for exception that are raised when a single command cannot be run in IOS.
+     |  
+     |  Method resolution order:
+     |      CLICommandError
+     |      builtins.Exception
+     |      builtins.BaseException
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self, command, message, *args)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.Exception:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.BaseException:
+     |  
+     |  __delattr__(self, name, /)
+     |      Implement delattr(self, name).
+     |  
+     |  __getattribute__(self, name, /)
+     |      Return getattr(self, name).
+     |  
+     |  __reduce__(...)
+     |      helper for pickle
+     |  
+     |  __repr__(self, /)
+     |      Return repr(self).
+     |  
+     |  __setattr__(self, name, value, /)
+     |      Implement setattr(self, name, value).
+     |  
+     |  __setstate__(...)
+     |  
+     |  __str__(self, /)
+     |      Return str(self).
+     |  
+     |  with_traceback(...)
+     |      Exception.with_traceback(tb) --
+     |      set self.__traceback__ to tb and return self.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from builtins.BaseException:
+     |  
+     |  __cause__
+     |      exception cause
+     |  
+     |  __context__
+     |      exception context
+     |  
+     |  __dict__
+     |  
+     |  __suppress_context__
+     |  
+     |  __traceback__
+     |  
+     |  args
+    
+    class IOSPCLIConfError(builtins.Exception)
+     |  Raised when some commands in a bulk configuration fail.
+     |  
+     |  Contains a list of the commands, along with a list of the failures.
+     |  
+     |  Method resolution order:
+     |      IOSPCLIConfError
+     |      builtins.Exception
+     |      builtins.BaseException
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self, results, *args)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  __str__(self)
+     |      Return str(self).
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.Exception:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.BaseException:
+     |  
+     |  __delattr__(self, name, /)
+     |      Implement delattr(self, name).
+     |  
+     |  __getattribute__(self, name, /)
+     |      Return getattr(self, name).
+     |  
+     |  __reduce__(...)
+     |      helper for pickle
+     |  
+     |  __repr__(self, /)
+     |      Return repr(self).
+     |  
+     |  __setattr__(self, name, value, /)
+     |      Implement setattr(self, name, value).
+     |  
+     |  __setstate__(...)
+     |  
+     |  with_traceback(...)
+     |      Exception.with_traceback(tb) --
+     |      set self.__traceback__ to tb and return self.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from builtins.BaseException:
+     |  
+     |  __cause__
+     |      exception cause
+     |  
+     |  __context__
+     |      exception context
+     |  
+     |  __dict__
+     |  
+     |  __suppress_context__
+     |  
+     |  __traceback__
+     |  
+     |  args
+    
+    class IOSPCLIError(builtins.Exception)
+     |  Exception raised when iosp_server returns a failure due to cli syntax or cli execution failure
+     |  
+     |  Method resolution order:
+     |      IOSPCLIError
+     |      builtins.Exception
+     |      builtins.BaseException
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  __str__(self)
+     |      Return str(self).
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.Exception:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.BaseException:
+     |  
+     |  __delattr__(self, name, /)
+     |      Implement delattr(self, name).
+     |  
+     |  __getattribute__(self, name, /)
+     |      Return getattr(self, name).
+     |  
+     |  __reduce__(...)
+     |      helper for pickle
+     |  
+     |  __repr__(self, /)
+     |      Return repr(self).
+     |  
+     |  __setattr__(self, name, value, /)
+     |      Implement setattr(self, name, value).
+     |  
+     |  __setstate__(...)
+     |  
+     |  with_traceback(...)
+     |      Exception.with_traceback(tb) --
+     |      set self.__traceback__ to tb and return self.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from builtins.BaseException:
+     |  
+     |  __cause__
+     |      exception cause
+     |  
+     |  __context__
+     |      exception context
+     |  
+     |  __dict__
+     |  
+     |  __suppress_context__
+     |  
+     |  __traceback__
+     |  
+     |  args
+    
+    class IOSPSetupInProgress(builtins.Exception)
+     |  Exception raised when iosp setup is in progress
+     |  
+     |  Method resolution order:
+     |      IOSPSetupInProgress
+     |      builtins.Exception
+     |      builtins.BaseException
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  __str__(self)
+     |      Return str(self).
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.Exception:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.BaseException:
+     |  
+     |  __delattr__(self, name, /)
+     |      Implement delattr(self, name).
+     |  
+     |  __getattribute__(self, name, /)
+     |      Return getattr(self, name).
+     |  
+     |  __reduce__(...)
+     |      helper for pickle
+     |  
+     |  __repr__(self, /)
+     |      Return repr(self).
+     |  
+     |  __setattr__(self, name, value, /)
+     |      Implement setattr(self, name, value).
+     |  
+     |  __setstate__(...)
+     |  
+     |  with_traceback(...)
+     |      Exception.with_traceback(tb) --
+     |      set self.__traceback__ to tb and return self.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from builtins.BaseException:
+     |  
+     |  __cause__
+     |      exception cause
+     |  
+     |  __context__
+     |      exception context
+     |  
+     |  __dict__
+     |  
+     |  __suppress_context__
+     |  
+     |  __traceback__
+     |  
+     |  args
+    
+    class IOSPSystemError(builtins.Exception)
+     |  Exception raised when iosp_server returns a system failure
+     |  
+     |  Method resolution order:
+     |      IOSPSystemError
+     |      builtins.Exception
+     |      builtins.BaseException
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  __str__(self)
+     |      Return str(self).
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.Exception:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.BaseException:
+     |  
+     |  __delattr__(self, name, /)
+     |      Implement delattr(self, name).
+     |  
+     |  __getattribute__(self, name, /)
+     |      Return getattr(self, name).
+     |  
+     |  __reduce__(...)
+     |      helper for pickle
+     |  
+     |  __repr__(self, /)
+     |      Return repr(self).
+     |  
+     |  __setattr__(self, name, value, /)
+     |      Implement setattr(self, name, value).
+     |  
+     |  __setstate__(...)
+     |  
+     |  with_traceback(...)
+     |      Exception.with_traceback(tb) --
+     |      set self.__traceback__ to tb and return self.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from builtins.BaseException:
+     |  
+     |  __cause__
+     |      exception cause
+     |  
+     |  __context__
+     |      exception context
+     |  
+     |  __dict__
+     |  
+     |  __suppress_context__
+     |  
+     |  __traceback__
+     |  
+     |  args
+    
+    class IOSPUnexpectedError(builtins.Exception)
+     |  Exception raised when iosp_server returns a system failure
+     |  
+     |  Method resolution order:
+     |      IOSPUnexpectedError
+     |      builtins.Exception
+     |      builtins.BaseException
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  __str__(self)
+     |      Return str(self).
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.Exception:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.BaseException:
+     |  
+     |  __delattr__(self, name, /)
+     |      Implement delattr(self, name).
+     |  
+     |  __getattribute__(self, name, /)
+     |      Return getattr(self, name).
+     |  
+     |  __reduce__(...)
+     |      helper for pickle
+     |  
+     |  __repr__(self, /)
+     |      Return repr(self).
+     |  
+     |  __setattr__(self, name, value, /)
+     |      Implement setattr(self, name, value).
+     |  
+     |  __setstate__(...)
+     |  
+     |  with_traceback(...)
+     |      Exception.with_traceback(tb) --
+     |      set self.__traceback__ to tb and return self.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from builtins.BaseException:
+     |  
+     |  __cause__
+     |      exception cause
+     |  
+     |  __context__
+     |      exception context
+     |  
+     |  __dict__
+     |  
+     |  __suppress_context__
+     |  
+     |  __traceback__
+     |  
+     |  args
+
+FUNCTIONS
+    ConfigResult(ResultFile)
+    
+    check_and_set_iosp_env()
+    
+    check_iosp_session()
+    
+    cli(command, timeout=None)
+        Execute Cisco IOS CLI command(s) and return the result.
+        
+        A single command or a delimited batch of commands may be run. The
+        delimiter is a space and a semicolon, " ;". Configuration commands must be
+        in fully qualified form.
+        
+        output = cli("show version")
+        output = cli("show version ; show ip interface brief")
+        output = cli("configure terminal ; interface gigabitEthernet 0/0 ; no shutdown")
+        
+        Args:
+            command (str): The exec or config CLI command(s) to be run.
+        
+        Returns:
+            string: CLI output for show commands and an empty string for
+                configuration commands.
+        
+        Raises:
+            IOSPCLIError: CLI syntax or execution Error
+            IOSPSystemError: System error
+            IOSPUnexpectedError: Unexpected Error
+    
+    clip(command, timeout=None)
+        Execute Cisco IOS CLI command(s) and print the result.
+        
+        A single command or a delimited batch of commands may be run. The
+        delimiter is a space and a semicolon, " ;". Configuration commands must be
+        in fully qualified form.
+        
+        clip("show version")
+        clip("show version ; show ip interface brief")
+        clip("configure terminal ; interface gigabitEthernet 0/0 ; no shutdown")
+        
+        Args:
+            command (str): The exec or config CLI command(s) to be run.
+    
+    configure(configuration, timeout=None)
+        Apply a configuration (set of Cisco IOS CLI config-mode commands) to the device
+        and return a list of results.
+        
+        configuration = '''interface gigabitEthernet 0/0
+                             no shutdown'''
+        
+        # push it through the Cisco IOS CLI.
+        try:
+            results = cli.configure(configuration)
+            print "Success!"
+        except CLIConfigurationError as e:
+            print "Failed configurations:"
+            for failure in e.failed:
+                print failure
+        
+        Args:
+            configuration (str or iterable): Configuration commands, separated by newlines.
+        
+        Returns:
+            list(ConfigResult): A list of results, one for each line.
+        
+        Raises:
+            CLISyntaxError: If there is a syntax error in the configuration.
+    
+    configurep(configuration, timeout=None)
+        Apply a configuration (set of Cisco IOS CLI config-mode commands) to the device
+        and prints the result.
+        
+        configuration = '''interface gigabitEthernet 0/0
+                             no shutdown'''
+        
+        # push it through the Cisco IOS CLI.
+        configurep(configuration)
+        
+        Args:
+            configuration (str or iterable): Configuration commands, separated by newlines.
+    
+    execute(command, timeout=None)
+        Execute Cisco IOS CLI exec-mode command and return the result.
+        
+        command_output = execute("show version")
+        
+        Args:
+            command (str): The exec-mode command to run.
+        
+        Returns:
+            str: The output of the command.
+        
+        Raises:
+            CLICommandError: If there are multiple commands sopecified in command line.
+    
+    executep(command, timeout=None)
+        Execute Cisco IOS CLI exec-mode command and print the result.
+        
+        executep("show version")
+        
+        Args:
+            command (str): The exec-mode command to run.
+    
+    get_current_caf_app_id()
+        Returns the current caf app id, such as "guestshell" or "day0guestshell"
+        
+        Returns:
+            string: The name of current caf app.
+        
+        Raises:
+            FileNotFoundError: If the file that stores environment variable for
+                CAF app id does not exist
+            LookupError: The file with environment variables exists but does not
+                contain the expected variable
+    
+    netconf_disable_guestshell(timeout=None)
+        Disables Netconf access from guestshell and removes any SSH keys for such
+        access.
+        
+        Args:
+            timeout: Time out for the command in seconds
+        
+        Returns:
+            string: 'Success' or error message.
+        
+        Raises:
+            IOSPSystemError: System error
+            IOSPUnexpectedError: Unexpected Error
+    
+    netconf_enable_guestshell(timeout=None)
+        Enables passwordless access for Netconf from guestshell on port 830
+        on localhost.
+        
+        Args:
+            timeout: Time out for the command in seconds
+        
+        Returns:
+            string: 'Success' or error message.
+        
+        Raises:
+            IOSPSystemError: System error
+            IOSPUnexpectedError: Unexpected Error
+    
+    valid(command)
+        # validate a command
+
+DATA
+    BKUP_LOGFILE = '/data/iosp.log.1'
+    LOGFILE = '/data/iosp.log'
+    MAX_WAIT_TIME = None
+    parser_dict = {'PARSER_COMMAND': '', 'PARSER_ERROR': '', 'PARSER_ERROR...
+
+VERSION
+    2.0.0
+
+FILE
+    /usr/lib/python3.6/site-packages/cli/__init__.py
