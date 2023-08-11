@@ -1,0 +1,243 @@
+ 
+Usage:
+ 
+  iosp_client [-h | --help]
+        print this help (overall usage of iosp_client)
+ 
+  iosp_client {  [-n session_id]
+                 [-k token_file]
+                 [-s socket_file]
+ 
+                 [-l [log_file]]
+                 [-ls [log_size]]
+                 [-lt [log_size_total]]
+                 [-lm [log_mode]]
+                 [-ld [log_debug_level]]
+ 
+                 [-x[a] [export_file]]
+                 [-xm [export_mode]]
+                 [-xd [export_debug_level]]
+ 
+                 [-o[a] [output_file]]
+                 [-om [output_mode]]
+                 [-od [output_debug_level]]
+ 
+                 [-b]
+                 [-bz]
+                 [-bm [batch_execution_mode]]
+ 
+                 [-em [overall_execution_mode]]
+ 
+                 [-tf [timeout_per_function_seconds]]
+                 [-tb [timeout_per_batch_seconds]]
+                 [-t [timeout_overall_seconds]]
+ 
+                 [-c]
+                 [-cz]
+ 
+                 [-a [typeahead]]
+                 [ -i [input_file] | -e [command] | -c [command] | -f [function] ] }*
+ 
+       iosp_client connects to IOSP-server (using session_id, token_file, socket_file),
+           creates VTY (which is deleted when iosp_client disconnects from IOSP-server),
+           and executes given IOS-CLI-command(s) and/or IOS-function(s)
+           provided via one of these options:
+ 
+            -f  executes given function ('-f help' prints list of all available IOS-functions);
+            -e  executes given command;
+            -c  same as -e, but VTY is switched to config mode before executing given command, and to exec mode after executing given command;
+            -i  executes sequence of commands received from input_file or stdin (press ctrl-D to end input from stdin);
+ 
+       VTY state persists throughout the entire execution of iosp_client,
+           e.g. switching to config mode (and submodes) is inherited by subsequent commands.
+           These options switch VTY between exec (default) and config modes:
+ 
+            -c  switches VTY to config mode (equivalent to -e 'configure terminal');
+            -cz switches VTY to exec mode (equivalent to -e 'end').
+ 
+       Multiple occurrances of each option are allowed,
+           each overriding the previous setting of corresponding value and affecting subsequent execution.
+       Providing option without a value resets the corresponding value to default.
+ 
+       When executing IOS-function, iosp_client passes the corresponding arguments to IOSP-server,
+           which executes the requested function with those arguments,
+           and returns function_return_code, function_error_message, and function_response data back to iosp_client,
+           which outputs them to the user.
+ 
+       When executing IOS-CLI-command, iosp_client passes the command to IOSP-server,
+           which executes the command by calling IOS-CLI-parser,
+           and returns parser_return_code, parser_error_pos, parser_mode_context, parser_prompt, and parser_output,
+           which are passed back to iosp_client, which outputs them to the user.
+ 
+       When executing batch of IOS-CLI-commands, iosp_client performs as if same commands were executed individually,
+           but does not wait for results to arrive before sending next IOS-CLI-command to server (which allows better efficiency).
+           Option -b initiates new batch (which automatically ends previous batch, if any); option -bz ends batch.
+           The following values can be set specifically for batch execution (to take effect, they must precede option -b):
+               batch_execution_mode (option -bm);
+               timeout_per_batch_seconds (option -tb);
+ 
+       The output is written to the output files log_file (default: none), export_file (default:none), and output_file (default: stdout),
+           according to 'output mode' setting and 'debug level' setting, configurable independently for each of the output files.
+       No output whatsoever is written to stderr.
+       log_file is always open in 'append' mode.
+       export_file and output_file have independent controls to open the file in 'truncate' vs. 'append' mode (see options -x/-xa and -o/-oa).
+       Debug level setting for each output file determines what error/debug messages go into that particular output file).
+       Output mode for each output file (log_file, export_file, output_file) determines what data is written to that particular output file,
+           as a result of each function/command execution.
+       The following output modes are available:
+ 
+           Output mode 0 ('none') produces:
+               no output whatsoever (error/debug messages will still be output according to debug level setting for this output file);
+ 
+           Output mode 1 ('bare') produces:
+               only FUNCTION_RESPONSE/PARSER_OUTPUT, unmodified, without any additional annotation;
+ 
+           Output mode 2 ('brief') produces:
+ 
+              for IOS-function:
+                 FUNCTION_RETURN_CODE (int returned by the IOS-function, zero means success, nonzero means failure);
+                 FUNCTION_RESPONSE (entire data returned by the IOS-function);
+ 
+              for IOS-CLI-command:
+                 PARSER_RETURN_CODE (PRC returned by IOS-parser, and status returned by IOSP-server (SUCCESS or FAILURE));
+                 PARSER_OUTPUT (entire parser output);
+ 
+           Output mode 3 ('full', default for export_file and output_file) produces:
+ 
+              for IOS-function:
+                 FUNCTION_ID (string id of the function);
+                 FUNCTION_ARG(s) (function-specific argument(s), passed by user);
+                 FUNCTION_RETURN_CODE (int returned by the IOS-function, zero means success, nonzero means failure);
+                 FUNCTION_ERROR_MESSAGE (string returned by the IOS-function, usually error message in case of failure);
+                 FUNCTION_RESPONSE (entire data returned by the IOS-function);
+ 
+              for IOS-CLI-command:
+                 PARSER_MODE_CONTEXT (mode context, when applicable);
+                 PARSER_COMMAND (command passed by user);
+                 PARSER_RETURN_CODE (PRC returned by IOS-parser, and status returned by IOSP-server (SUCCESS or FAILURE));
+                 PARSER_ERROR_POS (in case of error, position of error in the input command line);
+                 PARSER_OUTPUT (entire parser output);
+                 PARSER_PROMPT (prompt for the next command);
+ 
+           Output mode 4 ('log_brief') produces:
+ 
+              for IOS-function:
+                 FUNCTION_RETURN_CODE (int returned by the IOS-function, zero means success, nonzero means failure);
+                 FUNCTION_RESPONSE_HEAD (first 180 bytes of data returned by the IOS-function);
+ 
+              for IOS-CLI-command:
+                 PARSER_RETURN_CODE (PRC returned by IOS-parser, and status returned by IOSP-server (SUCCESS or FAILURE));
+                 PARSER_OUTPUT_HEAD (first 180 bytes of parser output);
+ 
+           Output mode 5 ('log_full', default for log_file) produces:
+ 
+              for IOS-function:
+                 FUNCTION_ID (string id of the function);
+                 FUNCTION_ARG(s) (function-specific argument(s), passed by user);
+                 FUNCTION_RETURN_CODE (int returned by the IOS-function, zero means success, nonzero means failure);
+                 FUNCTION_ERROR_MESSAGE (string returned by the IOS-function, usually error message in case of failure);
+                 FUNCTION_RESPONSE_HEAD (first 180 bytes of data returned by the IOS-function);
+ 
+              for IOS-CLI-command:
+                 PARSER_MODE_CONTEXT (mode context, when applicable);
+                 PARSER_COMMAND (command passed by user);
+                 PARSER_RETURN_CODE (PRC returned by IOS-parser, and status returned by IOSP-server (SUCCESS or FAILURE));
+                 PARSER_ERROR_POS (in case of error, position of error in the input command line);
+                 PARSER_OUTPUT_HEAD (first 180 bytes of parser output);
+                 PARSER_PROMPT (prompt for the next command);
+ 
+       The execution proceeds in the order of respective command line options.
+       The execution always stops if iosp_client itself encounters SYSTEM_FAILURE, including invalid command line options.
+       The execution may stop for other reasons, depending on 'overall_execution_mode' setting.
+       The following execution modes are available:
+ 
+           Execution mode 1 ('always_continue', default) means:
+               only stop if iosp_client itself encountered SYSTEM_FAILURE, including invalid command line options
+               (i.e. execution continues to subsequent functions/commands regardless of
+                  potential FUNCTION_DENIED or SYSTEM_FAILURE_ON_SERVER,
+                  or FUNCTION_RETURN_CODE or PARSER_RETURN_CODE value);
+ 
+           Execution mode 2 ('stop_on_failure_to_call') means:
+               stop on first failure to actually call the requested function/command in IOSd, for whatever reason,
+               including FUNCTION_DENIED or SYSTEM_FAILURE_ON_SERVER
+               (i.e. execution continues to subsequent functions/commands regardless of
+                  FUNCTION_RETURN_CODE or PARSER_RETURN_CODE value);
+ 
+           Execution mode 3 ('stop_on_any_failure') means:
+               stop on first failure of any nature,
+               including the requested function/command being actually called in IOSd and returning failure;
+ 
+           Execution mode 4 ('skip_submode_on_failure_to_enter') means:
+               skip submode commands if the IOS-CLI-command to enter that submode failed
+               (submode level is determined by command indentation, i.e. number of leading spaces in command string);
+ 
+       When execution stops, iosp_client exits with corresponding error code (see section 'RETURN VALUE').
+ 
+  DEFAULTS:
+        session_id="iosp_client_dmi" (superseded by env var IOSP_SESSION)
+        token_file="/tmp/rp/.iosp_client_dmi" (superseded by env var IOSP_TOKEN)
+        socket_file="/tmp/rp/lipc/iosd_portal_dmi_socket-b0" (superseded by env var IOSP_SOCKET)
+ 
+        log_file=<none> (superseded by env var IOSP_LOG)
+        log_size=0 (by default, no limit on log file size; superseded by env var IOSP_LOG_SIZE)
+        log_size_total=0 (by default, no limit on total log fileset size; superseded by env var IOSP_LOG_SIZE_TOTAL)
+        log_mode=5 (mode 'log_full')
+        log_debug_level=3 (level 'warning'; superseded by env var IOSP_DEBUG)
+ 
+        export_file=<none>
+        export_mode=3 (mode 'full')
+        export_debug_level=3 (level 'warning')
+ 
+        output_file=<stdout>
+        output_mode=3 (mode 'full')
+        output_debug_level=3 (level 'warning')
+ 
+        batch_execution_mode=1 (mode 'ALWAYS_CONTINUE')
+ 
+        overall_execution_mode=1 (mode 'ALWAYS_CONTINUE')
+ 
+        timeout_per_function_seconds=600 (superseded by env var IOSP_TIMEOUT)
+        timeout_per_batch_seconds=0 (by default, no timeout for batch execution time)
+        timeout_overall_seconds=0 (by default, no timeout for overall execution time)
+ 
+        typeahead=<empty>
+        input_file=<stdin>
+ 
+  RETURN VALUE:
+        0   means all requested IOS-function and IOS-parser executions were successful;
+        1   means IOS-function or IOS-parser returned FAILURE at least once (execution might continue depending on 'execution mode');
+        2   means IOSP-server returned FUNCTION_DENIED at least once (execution might continue depending on 'execution mode');
+        3   means IOSP-server returned SYSTEM_FAILURE_ON_SERVER at least once (execution might continue depending on 'execution mode');
+        4   means IOSP-client itself encountered SYSTEM_FAILURE (execution aborted);
+        11  means IOSP-client is unable to read IOSP token from file (execution aborted);
+        13  means IOSP-client is unable to establish IOSP connection (execution aborted);
+        16  means IOSP-client execution was aborted due to timeout set for overall execution time;
+        17  means IOSP-client execution was aborted due to timeout set for batch execution time;
+        18  means IOSP-client execution was aborted due to timeout set for function/command execution time;
+        20  means IOSP-client received invalid environment variables (execution might continue);
+        21  means IOSP-client received invalid command line options (execution aborted);
+        22  means IOSP-client is unable to open log file (execution might continue);
+        24  means IOSP-client is unable to open export file (execution aborted);
+        26  means IOSP-client is unable to open output file (execution aborted);
+        28  means IOSP-client is unable to open input file (execution aborted);
+ 
+  EXAMPLES:
+        iosp_client -e "show clock" -e "show ip interface"
+            executes "show clock", then "show ip interface";
+            the 'full' (default mode) output is directed (by default) to stdout
+ 
+        iosp_client -o /tmp/out.txt -e "show clock" -c "hostname foo"
+            executes "show clock", then switches VTY to config mode and executes "hostname foo";
+            the 'full' (default mode) output is directed (by '-o') to /tmp/out.txt, overwriting that file
+ 
+        iosp_client -em 3 -oa /tmp/out.txt -e "show clock" -x /tmp/bare.txt -xm 1 -c -i /tmp/config.txt
+            executes "show clock", then switches VTY to config mode, then executes commands from file /tmp/config.txt;
+            overall_execution_mode is set to 3 (by '-em 3'), which means the execution will stop after first failure;
+            the 'full' (default mode) output is directed (by '-oa') to /tmp/out.txt, appending to pre-existing content of that file;
+            in addition, the export output set to mode 'bare' (by '-xm 1') for the part of the execution starting from '-x',
+               is directed (by '-x') to /tmp/bare.txt, overwriting that file
+ 
+        iosp_client -t 10 -om 1 -f eem_proxy "1" "abcdef"
+            executes function "eem_proxy" with two arguments "1" and "abcdef",
+            with timeout 10 seconds;
+            the 'bare' output (by '-om 1') is directed (by default) to stdout.
